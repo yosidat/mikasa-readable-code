@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
         String filepath = getFilepathFromArguments(args);
-        String message = readMessageResource(filepath);
+        String[] message = readMessageResource(filepath);
         outputResult(message);
     }
 
@@ -26,31 +28,41 @@ public class Main {
      * メッセージリソースの取得
      * @param filepath ファイルパスの記述
      */
-    public static String readMessageResource(String filepath) {
+    public static String[] readMessageResource(String filepath) {
         FileReader fileReader = null;
         BufferedReader bufferedReader= null;
-        String resultText = null;
+        List<String> arrayText = new ArrayList<String>();
         try {
             fileReader = new FileReader(filepath);
             bufferedReader = new BufferedReader(fileReader);
 
-            resultText = resultText = bufferedReader.readLine();
+            String readText;
+            while ((readText = bufferedReader.readLine()) != null) {
+                arrayText.add(readText);
+            }
         }catch(FileNotFoundException e){
             //TODO: エラーハンドリング
         }catch(IOException e){
             //TODO: エラーハンドリング
         }finally {
-            //TODO: ファイルクローズ
-            //fileReader.close();
-            //bufferedReader.close();
+            // ファイルクローズ
+            try {
+                fileReader.close();
+                bufferedReader.close();
+            } catch (IOException e) {
+                // クローズに失敗しても何もしない
+            }
         }
-        return resultText;
+        return arrayText.toArray(new String[0]);
     }
 
     /**
      * 結果出力処理
      */
-    public static void outputResult(String text){
-        System.out.println(text);
+    public static void outputResult(String[] text){
+        // 複数行を出力する
+        for(int index = 0; index < text.length; index++) {
+            System.out.println(text[index]);
+        }
     }
 }
